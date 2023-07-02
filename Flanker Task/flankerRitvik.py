@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2023.1.2),
-    on June 27, 2023, at 16:44
+    on July 02, 2023, at 19:44
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -32,7 +32,7 @@ import sys  # to get file system encoding
 import psychopy.iohub as io
 from psychopy.hardware import keyboard
 
-import time
+
 
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
@@ -69,7 +69,7 @@ endExpNow = False  # flag for 'escape' or other condition => quit the exp
 frameTolerance = 0.001  # how close to onset before 'same' frame
 
 # Start Code - component code to be run after the window creation
-st = time.time()
+
 # --- Setup the Window ---
 win = visual.Window(
     size=(1024, 768), fullscr=True, screen=0, 
@@ -102,13 +102,27 @@ defaultKeyboard = keyboard.Keyboard(backend='iohub')
 
 # --- Initialize components for Routine "Instructions" ---
 text = visual.TextStim(win=win, name='text',
-    text='Using your dominant hand, press the arrow key pointing towards the same direction as the middle arrow. \n\nPress [->] if middle arrow points towards right\nPress [<-] if middle arrow points towards left\n\nThe practice trials will begin now\n\nPress any key to start.',
+    text='Using your dominant hand, press the arrow key pointing towards the same direction as the middle arrow. \n\nPress Right Arrow [->] if middle arrow points towards right\nPress Left Arrow [<-] if middle arrow points towards left\n\nThe practice trials will begin now\n\nPress any key to start.',
     font='Open Sans',
     pos=(0, 0), height=0.05, wrapWidth=None, ori=0.0, 
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     depth=0.0);
 key_resp_2 = keyboard.Keyboard()
+# Run 'Begin Experiment' code from code_7
+from pylsl import StreamOutlet, StreamInfo
+
+info = StreamInfo(name='Flanker', type='Markers', channel_count = 1, channel_format = 'string', source_id='LSL')
+outlet = StreamOutlet(info)
+
+mkr_block_begins = ['B1']
+mkr_trial_begins = ['T1']
+mkr_stimulus = ['S']
+mkr_correct = ['C']
+mkr_wrong = ['W']
+mkr_missing = ['M']
+mkr_trial_ends = ['T2']
+mkr_block_ends = ['B2']
 
 # --- Initialize components for Routine "FixationCross" ---
 text_2 = visual.TextStim(win=win, name='text_2',
@@ -156,6 +170,8 @@ text_8 = visual.TextStim(win=win, name='text_8',
     color='white', colorSpace='rgb', opacity=None, 
     languageStyle='LTR',
     depth=-1.0);
+
+# --- Initialize components for Routine "start_mark" ---
 
 # --- Initialize components for Routine "FixationCross" ---
 text_2 = visual.TextStim(win=win, name='text_2',
@@ -362,6 +378,9 @@ thisExp.addData('key_resp_2.keys',key_resp_2.keys)
 if key_resp_2.keys != None:  # we had a response
     thisExp.addData('key_resp_2.rt', key_resp_2.rt)
 thisExp.nextEntry()
+# Run 'End Routine' code from code_7
+outlet.push_sample(mkr_block_begins)
+print(mkr_block_begins)
 # the Routine "Instructions" was not non-slip safe, so reset the non-slip timer
 routineTimer.reset()
 
@@ -388,6 +407,9 @@ for thisPractice_trial in practice_trials:
     continueRoutine = True
     # update component parameters for each repeat
     text_2.setText(cross)
+    # Run 'Begin Routine' code from code
+    outlet.push_sample(mkr_trial_begins)
+    print(mkr_trial_begins)
     # keep track of which components have finished
     FixationCrossComponents = [text_2]
     for thisComponent in FixationCrossComponents:
@@ -573,6 +595,9 @@ for thisPractice_trial in practice_trials:
     _key_resp_allKeys = []
     Stimulus.setColor('white', colorSpace='rgb')
     Stimulus.setText(stimulus)
+    # Run 'Begin Routine' code from code_5
+    outlet.push_sample(mkr_stimulus)
+    print(mkr_stimulus)
     # keep track of which components have finished
     trialComponents = [key_resp, Stimulus]
     for thisComponent in trialComponents:
@@ -712,6 +737,17 @@ for thisPractice_trial in practice_trials:
     practice_trials.addData('key_resp.corr', key_resp.corr)
     if key_resp.keys != None:  # we had a response
         practice_trials.addData('key_resp.rt', key_resp.rt)
+    # Run 'End Routine' code from code_5
+    if (corrAns == 'left' and key_resp.keys == 'left') or (corrAns == 'right' and key_resp.keys == 'right'):
+        outlet.push_sample(mkr_correct)
+        print(mkr_correct)
+    elif key_resp.keys == None:
+        outlet.push_sample(mkr_missing)
+        print(mkr_missing)
+    else:
+        outlet.push_sample(mkr_wrong)
+        print(mkr_wrong)
+        
     # using non-slip timing so subtract the expected duration of this Routine (unless ended on request)
     if routineForceEnded:
         routineTimer.reset()
@@ -721,6 +757,9 @@ for thisPractice_trial in practice_trials:
     # --- Prepare to start Routine "is_gap" ---
     continueRoutine = True
     # update component parameters for each repeat
+    # Run 'Begin Routine' code from code_6
+    outlet.push_sample(mkr_trial_ends)
+    print(mkr_trial_ends)
     # keep track of which components have finished
     is_gapComponents = [text_5]
     for thisComponent in is_gapComponents:
@@ -818,6 +857,9 @@ continueRoutine = True
 key_resp_5.keys = []
 key_resp_5.rt = []
 _key_resp_5_allKeys = []
+# Run 'Begin Routine' code from code_2
+outlet.push_sample(mkr_block_ends)
+print(mkr_block_ends)
 # keep track of which components have finished
 task_startComponents = [key_resp_5, text_8]
 for thisComponent in task_startComponents:
@@ -923,6 +965,63 @@ thisExp.nextEntry()
 # the Routine "task_start" was not non-slip safe, so reset the non-slip timer
 routineTimer.reset()
 
+# --- Prepare to start Routine "start_mark" ---
+continueRoutine = True
+# update component parameters for each repeat
+# keep track of which components have finished
+start_markComponents = []
+for thisComponent in start_markComponents:
+    thisComponent.tStart = None
+    thisComponent.tStop = None
+    thisComponent.tStartRefresh = None
+    thisComponent.tStopRefresh = None
+    if hasattr(thisComponent, 'status'):
+        thisComponent.status = NOT_STARTED
+# reset timers
+t = 0
+_timeToFirstFrame = win.getFutureFlipTime(clock="now")
+frameN = -1
+
+# --- Run Routine "start_mark" ---
+routineForceEnded = not continueRoutine
+while continueRoutine:
+    # get current time
+    t = routineTimer.getTime()
+    tThisFlip = win.getFutureFlipTime(clock=routineTimer)
+    tThisFlipGlobal = win.getFutureFlipTime(clock=None)
+    frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+    # update/draw components on each frame
+    
+    # check for quit (typically the Esc key)
+    if endExpNow or defaultKeyboard.getKeys(keyList=["escape"]):
+        core.quit()
+        if eyetracker:
+            eyetracker.setConnectionState(False)
+    
+    # check if all components have finished
+    if not continueRoutine:  # a component has requested a forced-end of Routine
+        routineForceEnded = True
+        break
+    continueRoutine = False  # will revert to True if at least one component still running
+    for thisComponent in start_markComponents:
+        if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+            continueRoutine = True
+            break  # at least one component has not yet finished
+    
+    # refresh the screen
+    if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+        win.flip()
+
+# --- Ending Routine "start_mark" ---
+for thisComponent in start_markComponents:
+    if hasattr(thisComponent, "setAutoDraw"):
+        thisComponent.setAutoDraw(False)
+# Run 'End Routine' code from code_8
+outlet.push_sample(mkr_block_begins)
+print(mkr_block_begins)
+# the Routine "start_mark" was not non-slip safe, so reset the non-slip timer
+routineTimer.reset()
+
 # set up handler to look after randomisation of conditions etc
 Sequence_Trial = data.TrialHandler(nReps=10.0, method='fullRandom', 
     extraInfo=expInfo, originPath=-1,
@@ -946,6 +1045,9 @@ for thisSequence_Trial in Sequence_Trial:
     continueRoutine = True
     # update component parameters for each repeat
     text_2.setText(cross)
+    # Run 'Begin Routine' code from code
+    outlet.push_sample(mkr_trial_begins)
+    print(mkr_trial_begins)
     # keep track of which components have finished
     FixationCrossComponents = [text_2]
     for thisComponent in FixationCrossComponents:
@@ -1131,6 +1233,9 @@ for thisSequence_Trial in Sequence_Trial:
     _key_resp_allKeys = []
     Stimulus.setColor('white', colorSpace='rgb')
     Stimulus.setText(stimulus)
+    # Run 'Begin Routine' code from code_5
+    outlet.push_sample(mkr_stimulus)
+    print(mkr_stimulus)
     # keep track of which components have finished
     trialComponents = [key_resp, Stimulus]
     for thisComponent in trialComponents:
@@ -1270,6 +1375,17 @@ for thisSequence_Trial in Sequence_Trial:
     Sequence_Trial.addData('key_resp.corr', key_resp.corr)
     if key_resp.keys != None:  # we had a response
         Sequence_Trial.addData('key_resp.rt', key_resp.rt)
+    # Run 'End Routine' code from code_5
+    if (corrAns == 'left' and key_resp.keys == 'left') or (corrAns == 'right' and key_resp.keys == 'right'):
+        outlet.push_sample(mkr_correct)
+        print(mkr_correct)
+    elif key_resp.keys == None:
+        outlet.push_sample(mkr_missing)
+        print(mkr_missing)
+    else:
+        outlet.push_sample(mkr_wrong)
+        print(mkr_wrong)
+        
     # using non-slip timing so subtract the expected duration of this Routine (unless ended on request)
     if routineForceEnded:
         routineTimer.reset()
@@ -1279,6 +1395,9 @@ for thisSequence_Trial in Sequence_Trial:
     # --- Prepare to start Routine "is_gap" ---
     continueRoutine = True
     # update component parameters for each repeat
+    # Run 'Begin Routine' code from code_6
+    outlet.push_sample(mkr_trial_ends)
+    print(mkr_trial_ends)
     # keep track of which components have finished
     is_gapComponents = [text_5]
     for thisComponent in is_gapComponents:
@@ -1373,6 +1492,9 @@ for thisSequence_Trial in Sequence_Trial:
 # --- Prepare to start Routine "Rest" ---
 continueRoutine = True
 # update component parameters for each repeat
+# Run 'Begin Routine' code from code_3
+outlet.push_sample(mkr_block_ends)
+print(mkr_block_ends)
 # keep track of which components have finished
 RestComponents = [text_6]
 for thisComponent in RestComponents:
@@ -1454,6 +1576,9 @@ while continueRoutine and routineTimer.getTime() < 60.0:
 for thisComponent in RestComponents:
     if hasattr(thisComponent, "setAutoDraw"):
         thisComponent.setAutoDraw(False)
+# Run 'End Routine' code from code_3
+outlet.push_sample(mkr_block_begins)
+print(mkr_block_begins)
 # using non-slip timing so subtract the expected duration of this Routine (unless ended on request)
 if routineForceEnded:
     routineTimer.reset()
@@ -1483,6 +1608,9 @@ for thisTrial in trials:
     continueRoutine = True
     # update component parameters for each repeat
     text_2.setText(cross)
+    # Run 'Begin Routine' code from code
+    outlet.push_sample(mkr_trial_begins)
+    print(mkr_trial_begins)
     # keep track of which components have finished
     FixationCrossComponents = [text_2]
     for thisComponent in FixationCrossComponents:
@@ -1668,6 +1796,9 @@ for thisTrial in trials:
     _key_resp_allKeys = []
     Stimulus.setColor('white', colorSpace='rgb')
     Stimulus.setText(stimulus)
+    # Run 'Begin Routine' code from code_5
+    outlet.push_sample(mkr_stimulus)
+    print(mkr_stimulus)
     # keep track of which components have finished
     trialComponents = [key_resp, Stimulus]
     for thisComponent in trialComponents:
@@ -1807,6 +1938,17 @@ for thisTrial in trials:
     trials.addData('key_resp.corr', key_resp.corr)
     if key_resp.keys != None:  # we had a response
         trials.addData('key_resp.rt', key_resp.rt)
+    # Run 'End Routine' code from code_5
+    if (corrAns == 'left' and key_resp.keys == 'left') or (corrAns == 'right' and key_resp.keys == 'right'):
+        outlet.push_sample(mkr_correct)
+        print(mkr_correct)
+    elif key_resp.keys == None:
+        outlet.push_sample(mkr_missing)
+        print(mkr_missing)
+    else:
+        outlet.push_sample(mkr_wrong)
+        print(mkr_wrong)
+        
     # using non-slip timing so subtract the expected duration of this Routine (unless ended on request)
     if routineForceEnded:
         routineTimer.reset()
@@ -1816,6 +1958,9 @@ for thisTrial in trials:
     # --- Prepare to start Routine "is_gap" ---
     continueRoutine = True
     # update component parameters for each repeat
+    # Run 'Begin Routine' code from code_6
+    outlet.push_sample(mkr_trial_ends)
+    print(mkr_trial_ends)
     # keep track of which components have finished
     is_gapComponents = [text_5]
     for thisComponent in is_gapComponents:
@@ -1913,6 +2058,9 @@ continueRoutine = True
 key_resp_3.keys = []
 key_resp_3.rt = []
 _key_resp_3_allKeys = []
+# Run 'Begin Routine' code from code_4
+outlet.push_sample(mkr_block_ends)
+print(mkr_block_ends)
 # keep track of which components have finished
 ThanksComponents = [text_3, key_resp_3]
 for thisComponent in ThanksComponents:
@@ -2030,8 +2178,7 @@ if key_resp_3.keys != None:  # we had a response
 thisExp.nextEntry()
 # the Routine "Thanks" was not non-slip safe, so reset the non-slip timer
 routineTimer.reset()
-et = time.time()
-print("Time taken: ", et - st)
+
 # --- End experiment ---
 # Flip one final time so any remaining win.callOnFlip() 
 # and win.timeOnFlip() tasks get executed before quitting
